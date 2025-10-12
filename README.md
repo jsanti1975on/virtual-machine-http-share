@@ -1,7 +1,8 @@
 # Cyber Lab Practice: 
 
 ## This will be saved locally are ran PowerShell - it will also live on locally on LAN using a Raspberry Pie
-<img width="931" height="644" alt="Mid-Term-Help" src="https://github.com/user-attachments/assets/4cedf498-593f-4fcd-9c4c-5c88d2225826" />
+<img width="945" height="658" alt="Mid-Term-Help" src="https://github.com/user-attachments/assets/10a9e91b-8e3b-4b45-97ae-d01a56d0d0d4" />
+
 > Image: Local terminal
 
 >  Internal use only —  Toolkit for hands on practical use and part of my hands Cyber Security studies 
