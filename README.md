@@ -1,7 +1,6 @@
 # Cyber Lab Practice: 
 
 ## This will be saved locally - test with PowerShell - it will also live locally on LAN using a Raspberry Pie
-<img width="945" height="658" alt="Mid-Term-Help" src="https://github.com/user-attachments/assets/10a9e91b-8e3b-4b45-97ae-d01a56d0d0d4" />
 
 <img width="1919" height="1012" alt="1" src="https://github.com/user-attachments/assets/5318f7b7-f84e-47dd-9a9a-01ea4dd0015b" />
 <img width="1922" height="1010" alt="2" src="https://github.com/user-attachments/assets/cdd23c58-fe9c-413a-97ba-94bee299a598" />
