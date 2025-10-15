@@ -99,7 +99,7 @@ wget https://raw.githubusercontent.com/<your-username>/<repo-name>/main/cheats/t
 
 ---
 
-## Directory Structure
+## Directory Structure: Below was added to the Cyber-Dash projects and lives in Cyber-Dash dir
 
 ```
 /cheats/
