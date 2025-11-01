@@ -1,134 +1,204 @@
-# Cyber Lab Practice: 
+# dash-launcher-vlan1
 
-## This will be saved locally - test with PowerShell - it will also live locally on LAN using a Raspberry Pie
+A small Windows launcher (**open-dash.exe**) you compile in **WSL** that opens a dashboard URL (e.g., your VLAN1 jumpbox web UI) and embeds a custom **.ico**. Includes an environment config file so you can quickly switch networks (VLANs) without recompiling.
 
-### Fixed tux's head with one index.html rather than the frames saved in a seperate dir.
-
-<img width="1919" height="1012" alt="1" src="https://github.com/user-attachments/assets/5318f7b7-f84e-47dd-9a9a-01ea4dd0015b" />
-<img width="1922" height="1010" alt="2" src="https://github.com/user-attachments/assets/cdd23c58-fe9c-413a-97ba-94bee299a598" />
-<img width="1921" height="1008" alt="3" src="https://github.com/user-attachments/assets/841a19da-51ca-4a51-951f-5ddd086c29d2" />
-<img width="1935" height="1009" alt="Start" src="https://github.com/user-attachments/assets/e28a651a-58e7-4a08-9d3e-923da5ce966c" />
-<img width="1938" height="1005" alt="4" src="https://github.com/user-attachments/assets/1d5e7c7c-3183-455f-93f0-1599b33e4a7b" />
-<img width="1933" height="1002" alt="5" src="https://github.com/user-attachments/assets/ff3f320f-a235-4452-99c6-7dfa74b4ec6c" />
-
-
-## 10-13-2025: Moving this project to home server adding python logic below.
-
-```Python
-#!/usr/bin/env python3
-import os
-from http.server import HTTPServer, SimpleHTTPRequestHandler
-import cgi
-
-# Define the Absolute path to uploads
-UPLOAD_DIR = "/opt/cheats/uploads"
-
-# Ensure it's always served from /opt/cheats (not from cwd)
-BASE_DIR = "/opt/cheats/uploads"
-os.chdir(BASE_DIR)
-
-class UploadHandler(SimpleHTTPRequestHandler):
-    def do_POST(self):
-        if self.path == '/upload':
-            ctype, pdict = cgi.parse_header(self.headers['content-type'])
-            if ctype == 'multipart/form-data':
-                form = cgi.FieldStorage(
-                    fp=self.rfile,
-                    headers=self.headers,
-                    environ={'REQUEST_METHOD': 'POST'}
-                )
-                if 'file' in form:
-                    uploaded_file = form['file']
-                    filename = os.path.basename(uploaded_file.filename)
-                    filepath = os.path.join(UPLOAD_DIR, filename)
-
-                    try:
-                        os.makedirs(UPLOAD_DIR, exist_ok=True)
-                        with open (filepath, 'wb') as f:
-                            f.write(uploaded_file.file.read())
-
-                            self.send_response(200)
-                            self.end_headers()
-                            self.wfile.write(f"File uploaded: {filename}".encode("utf-8"))
-                            print(f"[UPLOAD] Saved: {filename} to {filepath}")
-                            return
-                        
-                    except Exception as e:
-                        self.send_response(500)
-                        self.end_headers()
-                        self.wfile.write(f"Server error: {str(e)}".encode("utf-8"))
-                        print(f"[ERROR] Failed to save upload: {e}")
-                        return
-        self.send_response(400)
-        self.end_headers()                    
-        self.wfile.write("Upload failed or unsupported endpoint.".encode("utf-8"))
-
-def run():
-    os.makedirs(UPLOAD_DIR, exist_ok=True)
-    server_address = ("0.0.0.0", 8888)
-    httpd = HTTPServer(server_address, UploadHandler)
-    print("Serving on http://0.0.0.0:8888")
-    print(f"Uploads directory: {UPLOAD_DIR}")
-    httpd.serve_forever()
-
-if __name__ == '__main__':
-    run()
-```
-
-> Image: Local terminal
-
->  Internal use only —  Toolkit for hands on practical use and part of my hands Cyber Security studies 
-
-This repository is for use across VMs. We  can `curl` or `wget` any `.txt` or `.md` file directly from this GitHub repo using raw HTTPS links.
+> Primary use-case: Launch dashboards in a **Portfolio / Cyber Range** lab (e.g., dubz-vault.corp). Tested with a Lenovo ThinkCentre M700 Tiny running Windows 11 + Retail Plus, joined to AD domain, with father/son lab users.
 
 ---
 
-## Usage
+## ✅ What you get
 
-To pull a raw text into training environment VM:
+- `open-dash.exe` — Windows launcher that:
+  - Optionally pings a host/gateway (to avoid opening a dead link)
+  - Sleeps a moment (to let network settle)
+  - Opens your dashboard URL in the default browser
+  - **Embeds a custom icon** via Windows resource (`.rc` + `.ico`)
+
+- `launch.env` — **Change your target IP/URL** here (VLAN1, Mgmt, Jumpbox, etc.)
+
+- `build.sh` — Compile on **WSL** using MinGW (`x86_64-w64-mingw32-gcc` + `windres`).
+
+- `assets/app.ico` — Your icon. (Use a real `.ico`; see troubleshooting if `windres` fails.)
+
+---
+
+## 🧰 Prerequisites (WSL / Ubuntu)
 
 ```bash
-# Template Below
-curl -O https://raw.githubusercontent.com/<your-username>/<repo-name>/main/cheats/txt/nmap.txt
+sudo apt update
+sudo apt install -y mingw-w64 imagemagick python3-pip
 ```
 
-Or:
+> `mingw-w64` provides `x86_64-w64-mingw32-gcc` (compiler) and `x86_64-w64-mingw32-windres` (resource compiler).  
+> `imagemagick` lets you convert a PNG to ICO quickly.
+
+---
+
+## 📁 Project structure
+
+```
+dash-launcher-vlan1/
+├── open_dash.c      # C source for the launcher
+├── icon.rc          # Resource script (links to assets/app.ico)
+├── build.sh         # Build script for WSL (creates open-dash.exe)
+├── launch.env       # Config: URL/IP + ping host + delay
+└── assets/
+    └── app.ico      # Your .ico file (convert from a .png)
+```
+
+---
+
+## ⚙️ Configure (set your VLAN1 URL/IP)
+
+Edit `launch.env` (plain text key=value):
+
+```
+DASH_URL=http://172.20.10.30:8000/
+DASH_PING_HOST=172.20.10.1
+DASH_PING_COUNT=2
+DASH_SLEEP_MS=1500
+DASH_DO_PING=1
+```
+
+- **Change `DASH_URL`** when you move to a new VLAN / jumpbox / host.  
+- `DASH_DO_PING=1` lets the launcher quickly probe connectivity before opening the browser.  
+- `DASH_SLEEP_MS` gives the NIC time to settle after login/network switch.
+
+---
+
+## 🛠 Build the EXE
 
 ```bash
-# Template Below
-wget https://raw.githubusercontent.com/<your-username>/<repo-name>/main/cheats/txt/nmap.txt
+cd ~/dash-launcher-vlan1
+chmod +x build.sh
+./build.sh
+```
+
+**Output:** `open-dash.exe` is copied to your Windows Desktop.
+
+> If you see `x86_64-w64-mingw32-windres: command not found` — install `mingw-w64`.  
+> If you see `unexpected EOF` — replace the placeholder icon with a **real .ico** (see below).
+
+---
+
+## 🖼 Make/replace the icon (.ico)
+
+If you have a PNG you’d like to use:
+
+```bash
+convert /mnt/c/Users/<YOU>/OneDrive/Desktop/screenshot.png -resize 256x256 ./assets/app.ico
+```
+
+> Re-run `./build.sh` after updating the `.ico`.
+
+---
+
+## ▶️ Run with env config (Windows wrapper BAT)
+
+Create `setenv-and-run.bat` **next to the EXE** (e.g., on your Desktop):
+
+```
+@echo off
+setlocal
+for /f "usebackq tokens=1,2 delims==" %%A in ("C:\Users\<YOU>\OneDrive\launch.env") do set %%A=%%B
+start "" "%~dp0open-dash.exe"
+endlocal
+```
+
+- Put your `launch.env` somewhere Windows can read it (e.g., `C:\Users\<YOU>\OneDrive\launch.env`).  
+- Double-click the BAT → it loads env vars → launches the EXE → opens your dashboard URL.  
+- **Change VLAN?** Edit `DASH_URL` in `launch.env`. No rebuild needed.
+
+---
+
+## 🧪 Awareness payloads (optional)
+
+Inside `open_dash.c` you can toggle harmless demos:
+
+```c
+// system("start C:\\");   // Open C:\ in Explorer
+// system("start calc.exe"); // Pop Calculator
+```
+
+Default behavior is to open `DASH_URL`.
+
+> Use these only for **awareness training** inside your **lab environment**. Do not deploy to production.
+
+---
+
+## 🔐 Optional: code signing (Windows)
+
+If you have a code-signing cert:
+
+```
+"C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" sign ^
+  /f yourcert.pfx ^
+  /tr http://timestamp.digicert.com ^
+  /td sha256 ^
+  /fd sha256 ^
+  "C:\Users\<YOU>\Desktop\open-dash.exe"
 ```
 
 ---
 
-## Directory Structure: Below was added to the Cyber-Dash projects and lives in Cyber-Dash dir
+## 🩺 Troubleshooting
 
+**1) `x86_64-w64-mingw32-windres: command not found`**  
+Install MinGW cross-tools:
+```bash
+sudo apt update
+sudo apt install -y mingw-w64
 ```
-/cheats/
-├── index.html            # Cheat launcher interface
-├── tools/
-│   ├── nmap.html
-│   ├── hydra.html
-│   └── ...
-├── txt/
-│   ├── nmap.txt
-│   ├── hydra.txt
-│   └── ...
+
+**2) `unexpected EOF` from `windres`**  
+Your `app.ico` is a placeholder / invalid. Replace with a real `.ico`:
+```bash
+convert /path/to/image.png -resize 256x256 ./assets/app.ico
+```
+
+**3) Icon path issues in `icon.rc`**  
+Make sure the path is relative to project root:
+```
+id ICON "./assets/app.ico"
+```
+
+**4) EXE builds but no browser opens**  
+Confirm your env is loaded:
+- Print env inside `open_dash.c` (temporary debug):
+  ```c
+  printf("URL=%s\n", url);
+  ```
+- Or hard-code a test:
+  ```c
+  const char* url = "http://127.0.0.1:8000/index.html";
+  ```
+
+**5) WSL can’t copy to Desktop**  
+Set your Windows username in `build.sh`:
+```
+WIN_USER="jasdi"
+DESKTOP="/mnt/c/Users/$WIN_USER/Desktop"
 ```
 
 ---
 
-##  Available Cheats
+## 📎 Notes for Portfolio / AD Lab
 
-| Tool       | Raw Link |
-|------------|----------|
-| Nmap       | [`nmap.txt`](cheats/txt/nmap.txt) |
-| Hydra      | [`hydra.txt`](cheats/txt/hydra.txt) |
-| FFUF       | [`ffuf.txt`](cheats/txt/ffuf.txt) |
-| Gobuster   | [`gobuster.txt`](cheats/txt/gobuster.txt) |
+- Target machine: **Lenovo ThinkCentre M700 Tiny** (Windows 11, Retail Plus, AD-joined to `dubz-vault.corp`).  
+- Intended users: **you** and **your son** (Retail Plus) for learning audit/sales/losses workflows.  
+- This launcher is part of a broader **Portfolio 2024 / Cyber Range** and can be duplicated per VLAN or purpose (e.g., `dash-launcher-mgmt`, `dash-launcher-vlan10`, etc.).
 
 ---
 
-## Keep Building 
+## 📜 License / Ethics
 
-Host the repo on GitHub and keep it **Private**. Use the "Raw" button on any file to get direct HTTPS links for usage inside labs or over isolated subnets.
+This project is built for **education and awareness** in a **controlled lab**.  
+Do not deploy to production or use against systems without authorization.
+
+---
+
+## 📦 Next (optional)
+
+- Add a GitHub `README.md` with screenshots (`assets/`) for polish.  
+- Add a `.gitignore` to exclude `uploads/`, `__pycache__/`, `*.exe`, etc.  
+- Create variant launchers for other VLANs by copying this folder and changing only `launch.env`.
