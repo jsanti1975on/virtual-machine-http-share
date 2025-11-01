@@ -2,7 +2,7 @@
 
 A small Windows launcher (**open-dash.exe**) you compile in **WSL** that opens a dashboard URL (e.g., your VLAN1 jumpbox web UI) and embeds a custom **.ico**. Includes an environment config file so you can quickly switch networks (VLANs) without recompiling.
 
-> Primary use-case: Launch dashboards in a **Portfolio / Cyber Range** lab (e.g., dubz-vault.corp). Tested with a Lenovo ThinkCentre M700 Tiny running Windows 11 + Retail Plus, joined to AD domain, with father/son lab users.
+> Primary use-case: Launch dashboards in a **Portfolio / Cyber Range** lab (e.g., vault.corp). Tested with a Lenovo ThinkCentre M700 Tiny running Windows 11 + Retail Plus, joined to AD domain, with father/son lab users.
 
 ---
 
@@ -184,7 +184,7 @@ DESKTOP="/mnt/c/Users/$WIN_USER/Desktop"
 
 ## 📎 Notes for Portfolio / AD Lab
 
-- Target machine: **Lenovo ThinkCentre M700 Tiny** (Windows 11, Retail Plus, AD-joined to `dubz-vault.corp`).  
+- Target machine: **Lenovo ThinkCentre M700 Tiny** (Windows 11, Retail Plus, AD-joined to `vault.corp`).  
 - Intended users: **you** and **your son** (Retail Plus) for learning audit/sales/losses workflows.  
 - This launcher is part of a broader **Portfolio 2024 / Cyber Range** and can be duplicated per VLAN or purpose (e.g., `dash-launcher-mgmt`, `dash-launcher-vlan10`, etc.).
 
