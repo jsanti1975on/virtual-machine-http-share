@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cheat Panel — CTF Toolkit</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: monospace;
+      background: #000;
+      color: #0f0;
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: #111;
+      border-right: 2px solid #0f0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .sidebar h2 {
+      color: #0f0;
+      font-size: 18px;
+      margin-top: 0;
+      border-bottom: 1px solid #0f0;
+      padding-bottom: 10px;
+    }
+
+    .cheat-btn {
+      display: block;
+      background: transparent;
+      color: #0f0;
+      border: 1px solid #0f0;
+      margin: 10px 0;
+      padding: 10px;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .cheat-btn:hover {
+      background: #0f0;
+      color: #000;
+    }
+
+    .main {
+      flex-grow: 1;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    iframe {
+      width: 100%;
+      height: 90%;
+      border: 2px solid #0f0;
+      background: #000;
+    }
+
+    .info {
+      font-size: 13px;
+      color: #999;
+      margin-top: 8px;
+    }
+
+    a.txt-link {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #0ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>💀 Recon Cheats</h2>
+    <button class="cheat-btn" onclick="loadCheat('tools/nmap.html', 'txt/nmap.txt')">🛰️ Nmap</button>
+    <button class="cheat-btn" onclick="loadCheat('tools/ffuf.html', 'txt/ffuf.txt')">🌐 FFUF</button>
+    <button class="cheat-btn" onclick="loadCheat('tools/gobuster.html', 'txt/gobuster.txt')">📁 Gobuster</button>
+    <button class="cheat-btn" onclick="loadCheat('tools/dirsearch.html', 'txt/dirsearch.txt')">🔍 Dirsearch</button>
+
+    <h2>🔐 Brute/Crack</h2>
+    <button class="cheat-btn" onclick="loadCheat('tools/hydra.html', 'txt/hydra.txt')">🧪 Hydra</button>
+    <button class="cheat-btn" onclick="loadCheat('tools/john.html', 'txt/john.txt')">🔓 John the Ripper</button>
+
+    <h2> Resources/Links</h2>
+    <button class="cheat-btn" onclick="loadCheat('tools/links.html', 'txt/links.txt')"> Links</button>
+    <h2>🧪 Sandbox</h2>
+    <button class="cheat-btn" onclick="loadCheat('tools/sandbox.html', '')">🧮 JS Crypto Sandbox</button>
+  </div>
+
+  <div class="main">
+    <h1>💻 CTF Cheat Dashboard</h1>
+    <p class="info">Click a tool to view syntax and usage examples. Load raw .txt to copy into VMs.</p>
+
+    <iframe id="cheatFrame" src="" title="Cheat content will appear here"></iframe>
+    <a id="txtLink" class="txt-link" href="#" target="_blank" style="display:none;">🔗 Open raw .txt version</a>
+  </div>
+
+  <script>
+    function loadCheat(htmlPath, txtPath) {
+      document.getElementById('cheatFrame').src = htmlPath;
+      const txtLink = document.getElementById('txtLink');
+      txtLink.href = txtPath;
+      txtLink.style.display = "inline-block";
+    }
+  </script>
+</body>
+</html>

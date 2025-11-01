@@ -1,0 +1,15 @@
+# Full TCP scan with service/version detection
+nmap -sV -p- TARGET
+
+# Common ports with OS detection
+nmap -A TARGET
+
+# Fast scan top 100 ports
+nmap -F TARGET
+
+# UDP scan (slow)
+nmap -sU TARGET
+
+# Save output
+nmap -oN scan.txt TARGET
+

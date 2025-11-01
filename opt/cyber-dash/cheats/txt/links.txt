@@ -1,0 +1,5 @@
+- Ciphers and Codes
+https://rumkin.com/tools/cipher/dancing-men/
+
+- Base64 => Practice: SGVsbG8sIFdvcmxkIQ== Operating Mode Decoded to: Hello, World!
+https://rumkin.com/tools/cipher/base64/

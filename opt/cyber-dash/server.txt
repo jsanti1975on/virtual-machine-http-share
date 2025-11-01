@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+import os
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+import cgi
+
+# Set this to serve everything from /opt/
+BASE_DIR = "/opt"
+UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
+
+os.chdir(BASE_DIR)  # 📌 Critical
+
+class UploadHandler(SimpleHTTPRequestHandler):
+    def do_POST(self):
+        if self.path == '/upload':
+            ctype, pdict = cgi.parse_header(self.headers['content-type'])
+            if ctype == 'multipart/form-data':
+                form = cgi.FieldStorage(
+                    fp=self.rfile,
+                    headers=self.headers,
+                    environ={'REQUEST_METHOD': 'POST'}
+                )
+                if 'file' in form:
+                    uploaded_file = form['file']
+                    filename = os.path.basename(uploaded_file.filename)
+                    filepath = os.path.join(UPLOAD_DIR, filename)
+
+                    try:
+                        os.makedirs(UPLOAD_DIR, exist_ok=True)
+                        with open(filepath, 'wb') as f:
+                            f.write(uploaded_file.file.read())
+
+                        self.send_response(200)
+                        self.end_headers()
+                        self.wfile.write(f"✅ File uploaded: {filename}".encode("utf-8"))
+                        print(f"[UPLOAD] Saved: {filepath}")
+                        return
+                    except Exception as e:
+                        self.send_response(500)
+                        self.end_headers()
+                        self.wfile.write(f"❌ Server error: {str(e)}".encode("utf-8"))
+                        print(f"[ERROR] Upload failed: {e}")
+                        return
+
+        # If not POST to /upload
+        self.send_response(400)
+        self.end_headers()
+        self.wfile.write("❌ Bad request or unsupported endpoint.".encode("utf-8"))
+
+def run():
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    server_address = ("0.0.0.0", 8081)
+    httpd = HTTPServer(server_address, UploadHandler)
+    print("🚀 Server running at http://0.0.0.0:8081")
+    print(f"📁 Serving files from {BASE_DIR}")
+    print(f"📥 Uploads saved to {UPLOAD_DIR}")
+    httpd.serve_forever()
+
+if __name__ == '__main__':
+    run()
