@@ -2,6 +2,8 @@
 
 ## This will be saved locally - test with PowerShell - it will also live locally on LAN using a Raspberry Pie
 
+### Fixed tux's head with one index.html rather than the frames saved in a seperate dir.
+
 <img width="1919" height="1012" alt="1" src="https://github.com/user-attachments/assets/5318f7b7-f84e-47dd-9a9a-01ea4dd0015b" />
 <img width="1922" height="1010" alt="2" src="https://github.com/user-attachments/assets/cdd23c58-fe9c-413a-97ba-94bee299a598" />
 <img width="1921" height="1008" alt="3" src="https://github.com/user-attachments/assets/841a19da-51ca-4a51-951f-5ddd086c29d2" />
